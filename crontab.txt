@@ -1,0 +1,1 @@
+38 * * * * python /app/update-dynamic-dns.py > /dev/stdout
