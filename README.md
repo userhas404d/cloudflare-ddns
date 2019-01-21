@@ -6,7 +6,7 @@ Python script running as a cronjob in Docker to update Cloudflare DNS records.
 
 Allows the user to specify a list of subdomains that will be dynamically updated and/or created against an existing Cloudflare zone.
 
-Cloudflare domain proxying is enabled by default and is not currently configurable.
+Cloudflare domain proxying is configuable via an exclusion list.
 
 IPv6 addresses _should_ be supported but I have not tested this feature.
 
@@ -27,6 +27,7 @@ This application is desinged to be run standalone or via Docker
 docker run --name "cloudflareddns" \
   -e "CF_ZONE_NAME=yourdomain.com" \
   -e "CF_DNS_NAMES=host1,host2,host3" \
+  -e "CF_DNS_NAMES_NO_PROXY=host3" \
   -e "CF_API_EMAIL=user@example.com" \
   -e "CF_API_KEY=00000000000000000000000000000000" \
   "userhas404d/cloudflareddns:latest"
@@ -39,6 +40,7 @@ Configure the following environment variables
 ```bash
 export CF_ZONE_NAME="yourdomain.com"
 export CF_DNS_NAMES="host1,host2,host3"
+export CF_DNS_NAMES_NO_PROXY="host3"
 export CF_API_EMAIL='user@example.com'
 export CF_API_KEY='00000000000000000000000000000000'
 ```

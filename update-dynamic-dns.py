@@ -35,7 +35,7 @@ def my_ip_address():
     return ip_address, ip_address_type
 
 
-def do_dns_update(cf, zone_name, zone_id, dns_name, ip_address, ip_address_type):
+def do_dns_update(cf, zone_name, zone_id, dns_name, ip_address, ip_address_type, proxy):
     """Cloudflare API code - example"""
 
     try:
@@ -73,7 +73,7 @@ def do_dns_update(cf, zone_name, zone_id, dns_name, ip_address, ip_address_type)
             'name':dns_name,
             'type':ip_address_type,
             'content':ip_address,
-            'proxied':True
+            'proxied':proxy
         }
         try:
             dns_record = cf.zones.dns_records.put(zone_id, dns_record_id, data=dns_record)
@@ -90,7 +90,7 @@ def do_dns_update(cf, zone_name, zone_id, dns_name, ip_address, ip_address_type)
         'name':dns_name,
         'type':ip_address_type,
         'content':ip_address,
-        'proxied':True
+        'proxied':proxy
     }
     try:
         dns_record = cf.zones.dns_records.post(zone_id, data=dns_record)
@@ -107,6 +107,7 @@ def main():
 
     zone_name = os.environ['CF_ZONE_NAME']
     dns_names = os.environ['CF_DNS_NAMES'].split(',')
+    dns_names_no_proxy = os.environ['CF_DNS_NAMES_NO_PROXY'].split(',')
 
     # grab the zone identifier
     try:
@@ -138,7 +139,11 @@ def main():
 
         print('MY IP: %s %s' % (dns_name, ip_address))
 
-        do_dns_update(cf, zone_name, zone_id, dns_name, ip_address, ip_address_type)
+        if name in dns_names_no_proxy:
+          do_dns_update(cf, zone_name, zone_id, dns_name, ip_address, ip_address_type, proxy=False)
+        else:
+          do_dns_update(cf, zone_name, zone_id, dns_name, ip_address, ip_address_type, proxy=True)
+          
     exit(0)
 
 if __name__ == '__main__':
